@@ -5,7 +5,8 @@ module OmniAuth
     class Yammer < OmniAuth::Strategies::OAuth2
 
       option :name, 'yammer'
-      option :provider_ignores_state, true
+      option :provider_ignores_state, false
+      option :authorize_options, [:scope, :display, :auth_type, :state]
 
       option :client_options, {
         :site => (ENV['YAMMER_DOMAIN'] || 'https://www.yammer.com'),
@@ -55,6 +56,10 @@ module OmniAuth
 
       def primary_email
         raw_info['contact']['email_addresses'].detect{|address| address['type'] == 'primary'}['address'] rescue nil
+      end
+
+      def callback_url
+        options[:callback_url] || full_host + script_name + callback_path
       end
 
       private
